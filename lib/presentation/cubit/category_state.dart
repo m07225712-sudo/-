@@ -1,4 +1,4 @@
-import '../../domain/models/category_model.dart';
+import '../../data/database/app_database.dart';
 
 abstract class CategoryState {}
 
@@ -7,7 +7,7 @@ class CategoryInitial extends CategoryState {}
 class CategoryLoading extends CategoryState {}
 
 class CategoryLoaded extends CategoryState {
-  final List<CategoryModel> categories;
+  final List<Category> categories;
 
   CategoryLoaded(this.categories);
 }

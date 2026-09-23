@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../data/database/app_database.dart';
 import '../../data/repository/app_repository.dart';
-import '../../domain/models/transaction_model.dart';
 import 'transaction_state.dart';
 
 class TransactionCubit extends Cubit<TransactionState> {
@@ -14,23 +14,10 @@ class TransactionCubit extends Cubit<TransactionState> {
     try {
       final transactions = await repository.fetchTransactions();
       final settings = await repository.loadUserSettings();
-      final models = transactions
-          .map(
-            (transaction) => TransactionModel(
-              id: transaction.id,
-              userId: 0,
-              categoryId: 0,
-              title: transaction.category,
-              amount: transaction.amount,
-              description: transaction.type,
-              createdAt: transaction.date,
-            ),
-          )
-          .toList();
 
       emit(
         TransactionLoaded(
-          transactions: models,
+          transactions: transactions,
           userName: settings['name'] ?? 'Urmat',
           currency: settings['currency'] ?? 'сом',
         ),
@@ -49,7 +36,7 @@ class TransactionCubit extends Cubit<TransactionState> {
     }
   }
 
-  Future<void> updateTransaction(TransactionModel item) async {
+  Future<void> updateTransaction(Transaction item) async {
     try {
       await repository.updateTransaction(item);
       await loadTransactions();

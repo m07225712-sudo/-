@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'data/database/app_database.dart';
 import 'data/datasource/local_data_source.dart';
 import 'data/datasource/preference_datasource.dart';
 import 'data/repository/app_repository.dart';
-import 'screens/main_navigation_screen.dart';
+import 'presentation/routes/app_router.dart';
+import 'presentation/theme/app_colors.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,21 +24,30 @@ void main() {
 
 class MyApp extends StatelessWidget {
   final AppRepository repository;
+  final AppRouter appRouter;
 
-  const MyApp({super.key, required this.repository});
+  MyApp({super.key, required this.repository}) : appRouter = AppRouter();
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       title: 'Money Tracker',
+      builder: (context, child) => RepositoryProvider.value(
+        value: repository,
+        child: child ?? const SizedBox.shrink(),
+      ),
       theme: ThemeData(
         useMaterial3: true,
-        colorSchemeSeed: Colors.deepPurple,
-        scaffoldBackgroundColor: const Color(0xFF0B1B17),
-        brightness: Brightness.dark,
+        scaffoldBackgroundColor: AppColors.background,
+        brightness: Brightness.light,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: AppColors.primary,
+          brightness: Brightness.light,
+          surface: AppColors.surface,
+        ),
       ),
-      home: const MainNavigationScreen(),
+      routerConfig: appRouter.config(),
     );
   }
 }

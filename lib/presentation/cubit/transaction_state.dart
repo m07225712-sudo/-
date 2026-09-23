@@ -1,4 +1,4 @@
-import '../../domain/models/transaction_model.dart';
+import '../../data/database/app_database.dart';
 
 abstract class TransactionState {}
 
@@ -7,7 +7,7 @@ class TransactionInitial extends TransactionState {}
 class TransactionLoading extends TransactionState {}
 
 class TransactionLoaded extends TransactionState {
-  final List<TransactionModel> transactions;
+  final List<Transaction> transactions;
   final String userName;
   final String currency;
 

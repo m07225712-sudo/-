@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'home_screen.dart';
+import '../presentation/theme/app_colors.dart';
 
 class OperationsScreen extends StatefulWidget {
   final List<Map<String, dynamic>> operations;
@@ -33,17 +34,22 @@ class _OperationsScreenState extends State<OperationsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Все операции', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: Colors.white)),
+            const Text('Все операции',
+                style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.text)),
             const SizedBox(height: 14),
             TextField(
               onChanged: (value) => setState(() => _searchQuery = value),
-              style: const TextStyle(color: Colors.white, fontSize: 14),
+              style: const TextStyle(color: AppColors.text, fontSize: 14),
               decoration: InputDecoration(
                 hintText: 'Поиск по названию...',
-                hintStyle: const TextStyle(color: Colors.white24),
-                prefixIcon: const Icon(Icons.search, color: Colors.white38, size: 20),
+                hintStyle: const TextStyle(color: AppColors.textMuted),
+                prefixIcon: const Icon(Icons.search,
+                    color: AppColors.textMuted, size: 20),
                 filled: true,
-                fillColor: const Color(0xFF122722),
+                fillColor: AppColors.surface,
                 contentPadding: const EdgeInsets.symmetric(vertical: 0),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
@@ -57,7 +63,8 @@ class _OperationsScreenState extends State<OperationsScreen> {
                   ? const Center(
                       child: Text(
                         'Записей не найдено',
-                        style: TextStyle(color: Colors.white24, fontSize: 13),
+                        style:
+                            TextStyle(color: AppColors.textMuted, fontSize: 13),
                       ),
                     )
                   : ListView.builder(
@@ -79,7 +86,7 @@ class _OperationsScreenState extends State<OperationsScreen> {
               height: 46,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF2E5E54),
+                  backgroundColor: AppColors.primary,
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),

@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../data/database/app_database.dart';
 import '../../data/repository/app_repository.dart';
-import '../../domain/models/category_model.dart';
 import 'category_state.dart';
 
 class CategoryCubit extends Cubit<CategoryState> {
@@ -13,16 +13,7 @@ class CategoryCubit extends Cubit<CategoryState> {
     emit(CategoryLoading());
     try {
       final list = await repository.fetchCategories();
-      final models = list
-          .map(
-            (category) => CategoryModel(
-              id: category.id,
-              name: category.name,
-              icon: category.icon ?? '📁',
-            ),
-          )
-          .toList();
-      emit(CategoryLoaded(models));
+      emit(CategoryLoaded(list));
     } catch (e) {
       emit(CategoryError('Не удалось загрузить категории'));
     }
@@ -37,7 +28,7 @@ class CategoryCubit extends Cubit<CategoryState> {
     }
   }
 
-  Future<void> updateCategory(CategoryModel category) async {
+  Future<void> updateCategory(Category category) async {
     try {
       await repository.updateCategory(category);
       await loadCategories();

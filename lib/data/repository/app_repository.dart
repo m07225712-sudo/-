@@ -1,7 +1,5 @@
 import 'package:drift/drift.dart';
 
-import '../../domain/models/category_model.dart';
-import '../../domain/models/transaction_model.dart';
 import '../database/app_database.dart';
 import '../datasource/local_data_source.dart';
 import '../datasource/preference_datasource.dart';
@@ -22,23 +20,16 @@ class AppRepository {
   Future<int> addTransaction(String title, double amount, int categoryId, String description) {
     final entry = TransactionsCompanion.insert(
       amount: amount,
-      category: title,
+      category: description,
       date: DateTime.now(),
-      type: description.isEmpty ? 'expense' : description,
+      type: 'expense',
+      comment: Value(title),
     );
     return localDataSource.insertTransaction(entry);
   }
 
-  Future<bool> updateTransaction(TransactionModel item) {
-    final entry = TransactionsCompanion(
-      id: Value(item.id),
-      amount: Value(item.amount),
-      category: Value(item.title),
-      date: Value(item.createdAt),
-      type: Value(item.description),
-    );
-    return localDataSource.updateTransaction(entry);
-  }
+  Future<bool> updateTransaction(Transaction item) =>
+      localDataSource.updateTransaction(item.toCompanion(true));
 
   Future<int> deleteTransaction(int id) => localDataSource.deleteTransaction(id);
 
@@ -54,14 +45,8 @@ class AppRepository {
     return localDataSource.insertCategory(entry);
   }
 
-  Future<bool> updateCategory(CategoryModel category) {
-    final entry = CategoriesCompanion(
-      id: Value(category.id),
-      name: Value(category.name),
-      icon: Value(category.icon),
-    );
-    return localDataSource.updateCategory(entry);
-  }
+  Future<bool> updateCategory(Category category) =>
+      localDataSource.updateCategory(category.toCompanion(true));
 
   Future<int> deleteCategory(int id) => localDataSource.deleteCategory(id);
 

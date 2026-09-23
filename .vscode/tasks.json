@@ -1,0 +1,107 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Generate Dart code",
+			"type": "shell",
+			"command": "dart",
+			"args": [
+				"run",
+				"build_runner",
+				"build",
+				"--delete-conflicting-outputs"
+			],
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Run Flutter Chrome",
+			"type": "shell",
+			"command": "flutter",
+			"args": [
+				"run",
+				"-d",
+				"chrome",
+				"--web-port",
+				"52731"
+			],
+			"isBackground": true,
+			"problemMatcher": []
+		},
+		{
+			"label": "Clean Flutter build",
+			"type": "shell",
+			"command": "flutter",
+			"args": [
+				"clean"
+			],
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Restore Flutter packages",
+			"type": "shell",
+			"command": "flutter",
+			"args": [
+				"pub",
+				"get"
+			],
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Run Flutter Chrome Clean",
+			"type": "shell",
+			"command": "flutter",
+			"args": [
+				"run",
+				"-d",
+				"chrome",
+				"--web-port",
+				"52732"
+			],
+			"isBackground": true,
+			"problemMatcher": []
+		},
+		{
+			"label": "Clear Flutter temp cache",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"Get-ChildItem $env:TEMP -Filter 'flutter_tools.*' -Directory -ErrorAction SilentlyContinue | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue; Get-PSDrive C | Select-Object Used,Free"
+			],
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Run Chrome Clean",
+			"type": "shell",
+			"command": "flutter",
+			"args": [
+				"run",
+				"-d",
+				"chrome",
+				"--web-port",
+				"52732"
+			],
+			"isBackground": true,
+			"problemMatcher": []
+		},
+		{
+			"label": "Run Chrome Port 52733",
+			"type": "shell",
+			"command": "flutter",
+			"args": [
+				"run",
+				"-d",
+				"chrome",
+				"--web-port",
+				"52733"
+			],
+			"isBackground": true,
+			"problemMatcher": []
+		}
+	]
+}

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../presentation/theme/app_colors.dart';
+
 class CategoriesScreen extends StatelessWidget {
   final List<Map<String, String>> categories;
   final Function(String name, String icon) onAddCategory;
@@ -17,7 +19,7 @@ class CategoriesScreen extends StatelessWidget {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: const Color(0xFF122722),
+      backgroundColor: AppColors.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -37,18 +39,18 @@ class CategoriesScreen extends StatelessWidget {
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
-                color: Colors.white,
+                color: AppColors.text,
               ),
             ),
             const SizedBox(height: 16),
             TextField(
               controller: nameController,
-              style: const TextStyle(color: Colors.white),
+              style: const TextStyle(color: AppColors.text),
               decoration: InputDecoration(
                 labelText: 'Название',
-                labelStyle: TextStyle(color: Colors.white.withValues(alpha: 0.5)),
+                labelStyle: const TextStyle(color: AppColors.textMuted),
                 filled: true,
-                fillColor: const Color(0xFF1A332C),
+                fillColor: AppColors.surfaceMuted,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide.none,
@@ -58,12 +60,12 @@ class CategoriesScreen extends StatelessWidget {
             const SizedBox(height: 12),
             TextField(
               controller: iconController,
-              style: const TextStyle(color: Colors.white),
+              style: const TextStyle(color: AppColors.text),
               decoration: InputDecoration(
                 labelText: 'Иконка (эмодзи)',
-                labelStyle: TextStyle(color: Colors.white.withValues(alpha: 0.5)),
+                labelStyle: const TextStyle(color: AppColors.textMuted),
                 filled: true,
-                fillColor: const Color(0xFF1A332C),
+                fillColor: AppColors.surfaceMuted,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide.none,
@@ -76,7 +78,7 @@ class CategoriesScreen extends StatelessWidget {
               height: 48,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF2E5E54),
+                  backgroundColor: AppColors.primary,
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -111,7 +113,11 @@ class CategoriesScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Категории', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: Colors.white)),
+            const Text('Категории',
+                style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.text)),
             const SizedBox(height: 14),
             Expanded(
               child: GridView.builder(
@@ -126,17 +132,21 @@ class CategoriesScreen extends StatelessWidget {
                   return Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF122722),
+                      color: AppColors.surface,
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Row(
                       children: [
-                        Text(categories[index]['icon']!, style: const TextStyle(fontSize: 18)),
+                        Text(categories[index]['icon']!,
+                            style: const TextStyle(fontSize: 18)),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
                             categories[index]['name']!,
-                            style: const TextStyle(fontWeight: FontWeight.w500, color: Colors.white, fontSize: 13),
+                            style: const TextStyle(
+                                fontWeight: FontWeight.w500,
+                                color: AppColors.text,
+                                fontSize: 13),
                           ),
                         ),
                       ],
@@ -148,11 +158,13 @@ class CategoriesScreen extends StatelessWidget {
             OutlinedButton(
               style: OutlinedButton.styleFrom(
                 minimumSize: const Size(double.infinity, 46),
-                side: const BorderSide(color: Color(0xFF2E5E54)),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                side: const BorderSide(color: AppColors.primary),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
               ),
               onPressed: () => _showAddCategoryModal(context),
-              child: const Text('+ Создать категорию', style: TextStyle(color: Color(0xFF73A89C), fontSize: 13)),
+              child: const Text('+ Создать категорию',
+                  style: TextStyle(color: AppColors.primary, fontSize: 13)),
             ),
           ],
         ),

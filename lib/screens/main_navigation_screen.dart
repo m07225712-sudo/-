@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../data/repository/app_repository.dart';
+import 'package:auto_route/auto_route.dart';
+import '../presentation/theme/app_colors.dart';
 import 'home_screen.dart';
 import 'operations_screen.dart';
 import 'categories_screen.dart';
 import 'settings_screen.dart';
 
+@RoutePage()
 class MainNavigationScreen extends StatefulWidget {
   const MainNavigationScreen({super.key});
 
@@ -14,10 +19,34 @@ class MainNavigationScreen extends StatefulWidget {
 class _MainNavigationScreenState extends State<MainNavigationScreen> {
   int _currentIndex = 0;
 
+  @override
+  void initState() {
+    super.initState();
+    _loadSavedOperations();
+  }
+
   final List<Map<String, dynamic>> _operations = [
-    {'title': 'Продукты', 'category': 'Еда', 'amount': '- 6 165 сом', 'date': '21.09.2026', 'icon': '🍔'},
-    {'title': 'Аренда', 'category': 'Дом', 'amount': '- 98 989 сом', 'date': '21.09.2026', 'icon': '🏠'},
-    {'title': 'Покупки', 'category': 'Другое', 'amount': '- 95 959 сом', 'date': '21.09.2026', 'icon': '📦'},
+    {
+      'title': 'Продукты',
+      'category': 'Еда',
+      'amount': '- 6 165 сом',
+      'date': '21.09.2026',
+      'icon': '🍔'
+    },
+    {
+      'title': 'Аренда',
+      'category': 'Дом',
+      'amount': '- 98 989 сом',
+      'date': '21.09.2026',
+      'icon': '🏠'
+    },
+    {
+      'title': 'Покупки',
+      'category': 'Другое',
+      'amount': '- 95 959 сом',
+      'date': '21.09.2026',
+      'icon': '📦'
+    },
   ];
 
   final List<Map<String, String>> _categories = [
@@ -31,13 +60,43 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     {'name': 'Другое', 'icon': '📦'},
   ];
 
-  void _addOperation(String title, String category, String amount) {
+  Future<void> _loadSavedOperations() async {
+    final transactions = await context.read<AppRepository>().fetchTransactions();
+    if (!mounted || transactions.isEmpty) return;
+
+    setState(() {
+      _operations
+        ..clear()
+        ..addAll(transactions.reversed.map((transaction) => {
+              'title': transaction.comment ?? transaction.category,
+              'category': transaction.category,
+              'amount': '- ${transaction.amount.toStringAsFixed(2)} сом',
+              'date': '${transaction.date.day.toString().padLeft(2, '0')}.${transaction.date.month.toString().padLeft(2, '0')}.${transaction.date.year}',
+              'icon': transaction.category == 'Еда'
+                  ? '🍔'
+                  : (transaction.category == 'Дом' ? '🏠' : '📦'),
+            }));
+    });
+  }
+
+  Future<void> _addOperation(String title, String category, String amount) async {
+    final parsedAmount = double.tryParse(amount.replaceAll(',', '.'));
+    if (parsedAmount == null || parsedAmount <= 0) return;
+
+    await context.read<AppRepository>().addTransaction(
+          title,
+          parsedAmount,
+          0,
+          category,
+        );
+
+    if (!mounted) return;
     setState(() {
       _operations.insert(0, {
         'title': title,
         'category': category,
-        'amount': '- $amount сом',
-        'date': '22.09.2026',
+        'amount': '- ${parsedAmount.toStringAsFixed(2)} сом',
+        'date': '${DateTime.now().day.toString().padLeft(2, '0')}.${DateTime.now().month.toString().padLeft(2, '0')}.${DateTime.now().year}',
         'icon': category == 'Еда' ? '🍔' : (category == 'Дом' ? '🏠' : '📦'),
       });
     });
@@ -52,12 +111,13 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   void _showAddExpenseModal(BuildContext context) {
     final titleController = TextEditingController();
     final amountController = TextEditingController();
-    String selectedCategory = _categories.isNotEmpty ? _categories.first['name']! : 'Другое';
+    String selectedCategory =
+        _categories.isNotEmpty ? _categories.first['name']! : 'Другое';
 
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: const Color(0xFF122722),
+      backgroundColor: AppColors.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -77,18 +137,18 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
-                color: Colors.white,
+                color: AppColors.text,
               ),
             ),
             const SizedBox(height: 16),
             TextField(
               controller: titleController,
-              style: const TextStyle(color: Colors.white),
+              style: const TextStyle(color: AppColors.text),
               decoration: InputDecoration(
                 labelText: 'Описание',
-                labelStyle: TextStyle(color: Colors.white.withValues(alpha: 0.5)),
+                labelStyle: const TextStyle(color: AppColors.textMuted),
                 filled: true,
-                fillColor: const Color(0xFF1A332C),
+                fillColor: AppColors.surfaceMuted,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide.none,
@@ -99,12 +159,12 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             TextField(
               controller: amountController,
               keyboardType: TextInputType.number,
-              style: const TextStyle(color: Colors.white),
+              style: const TextStyle(color: AppColors.text),
               decoration: InputDecoration(
                 labelText: 'Сумма (сом)',
-                labelStyle: TextStyle(color: Colors.white.withValues(alpha: 0.5)),
+                labelStyle: const TextStyle(color: AppColors.textMuted),
                 filled: true,
-                fillColor: const Color(0xFF1A332C),
+                fillColor: AppColors.surfaceMuted,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide.none,
@@ -116,22 +176,23 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
               builder: (context, setModalState) => Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF1A332C),
+                  color: AppColors.surfaceMuted,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: DropdownButton<String>(
                   value: selectedCategory,
                   isExpanded: true,
                   underline: const SizedBox(),
-                  dropdownColor: const Color(0xFF1A332C),
-                  style: const TextStyle(color: Colors.white),
+                  dropdownColor: AppColors.surface,
+                  style: const TextStyle(color: AppColors.text),
                   items: _categories
                       .map((c) => DropdownMenuItem(
                             value: c['name'],
                             child: Text(c['name']!),
                           ))
                       .toList(),
-                  onChanged: (val) => setModalState(() => selectedCategory = val!),
+                  onChanged: (val) =>
+                      setModalState(() => selectedCategory = val!),
                 ),
               ),
             ),
@@ -141,21 +202,28 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
               height: 48,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF2E5E54),
+                  backgroundColor: AppColors.primary,
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
                 onPressed: () {
-                  if (titleController.text.isNotEmpty && amountController.text.isNotEmpty) {
-                    _addOperation(titleController.text, selectedCategory, amountController.text);
-                    Navigator.pop(ctx);
+                  if (titleController.text.isNotEmpty &&
+                      amountController.text.isNotEmpty) {
+                    _addOperation(
+                      titleController.text.trim(),
+                      selectedCategory,
+                      amountController.text.trim(),
+                    ).then((_) {
+                      if (ctx.mounted) Navigator.pop(ctx);
+                    });
                   }
                 },
                 child: const Text(
                   'Добавить',
-                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                  style: TextStyle(
+                      color: AppColors.text, fontWeight: FontWeight.w600),
                 ),
               ),
             ),
@@ -188,13 +256,13 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showAddExpenseModal(context),
-        backgroundColor: const Color(0xFF2E5E54),
+        backgroundColor: AppColors.accent,
         elevation: 0,
         shape: const CircleBorder(),
         child: const Icon(Icons.add, color: Colors.white, size: 26),
       ),
       bottomNavigationBar: BottomAppBar(
-        color: const Color(0xFF0E221D),
+        color: AppColors.surface,
         elevation: 0,
         shape: const CircularNotchedRectangle(),
         notchMargin: 8,
@@ -224,7 +292,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         children: [
           Icon(
             icon,
-            color: isSelected ? const Color(0xFF73A89C) : Colors.white24,
+            color: isSelected ? AppColors.primary : AppColors.textMuted,
             size: 22,
           ),
           const SizedBox(height: 2),
@@ -232,7 +300,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             label,
             style: TextStyle(
               fontSize: 10,
-              color: isSelected ? const Color(0xFF73A89C) : Colors.white24,
+              color: isSelected ? AppColors.primary : AppColors.textMuted,
             ),
           ),
         ],
